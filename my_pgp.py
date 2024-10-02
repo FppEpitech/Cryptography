@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+import sys
+
+def GetHelpCaption():
+    return """USAGE
+    ./my_pgp CRYPTO_SYSTEM MODE [OPTIONS] [key]
+
+DESCRIPTION
+
+The MESSAGE is read from standard input
+  CRYPTO_SYSTEM
+    "xor"       computation using XOR algorithm
+    "aes"       computation using 128-bit AES algorithm
+    "rsa"       computation using RSA algorithm
+    "pgp-xor"   computation using both RSA and XOR algorithm
+    "pgp-aes"   computation using both RSA and 128-bit AES algorithm
+
+  MODE
+    -c          MESSAGE is clear and we want to cipher it
+    -d          MESSAGE is ciphered and we want to decipher it
+    -g P Q      for RSA only: Don't read a MESSAGE, but instead generate a public and private key pair from the prime number P and Q
+
+  OPTIONS
+    -b          for XOR, AES and PGP, only works on one block. The MESSAGE and the symmetric key must be the same size
+
+  key Key used to cipher/decipher MESSAGE (incompatible with -g MODE)"""
+
+def main():
+    if len(sys.argv) == 2 and sys.argv[1] == "-h":
+        print(GetHelpCaption())
+        return 0
+
+
+if __name__ == "__main__":
+    main()
