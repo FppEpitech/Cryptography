@@ -18,3 +18,15 @@ class Xor:
                 hexaXor = "0" + hexaXor
             cypher+=hexaXor
         cypher = "".join(map(str.__add__, cypher[-2::-2] ,cypher[-1::-2]))
+        return cypher
+
+
+    def decypherMessage(self):
+        decypher=""
+        self.message = "".join(map(str.__add__, self.message[-2::-2] ,self.message[-1::-2]))
+        for i in range (0, len(self.message), 2):
+            hexaLetter = hex(int(self.message[i] + self.message[i+1], 16))
+            hexaKey = hex(int(self.key[i] + self.key[i+1], 16))
+            xor = int(hexaLetter, 16) ^ int(hexaKey, 16)
+            decypher +=chr(xor)
+        return decypher
