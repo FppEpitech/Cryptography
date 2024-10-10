@@ -3,30 +3,37 @@ class Xor:
         self.message = message
         self.key = key
 
-    def cypherMessage(self):
-        cypher=""
-        hexaXor=""
-        for i in range (0, len(self.message)):
-            hexaKey = hex(int(self.key[i*2] + self.key[i*2+1], 16))
-            hexaLetter = hex(int(self.message[i].encode("utf-8").hex(), 16))
-            xor = int(hexaLetter, 16) ^ int(hexaKey, 16)
-            if xor == 0:
-                hexaXor = "00"
-            else:
-                hexaXor = hex(xor).removeprefix("0x")
-            if (len(hexaXor) == 1):
-                hexaXor = "0" + hexaXor
-            cypher+=hexaXor
-        cypher = "".join(map(str.__add__, cypher[-2::-2] ,cypher[-1::-2]))
-        return cypher
+    def cypherMessage(self) -> str:
+        return xor_encrypt(self.message[::-1], self.key)
+
+    def decypherMessage(self) -> str:
+        return xor_decrypt(self.message, self.key)[::-1]
 
 
-    def decypherMessage(self):
-        decypher=""
-        self.message = "".join(map(str.__add__, self.message[-2::-2] ,self.message[-1::-2]))
-        for i in range (0, len(self.message), 2):
-            hexaLetter = hex(int(self.message[i] + self.message[i+1], 16))
-            hexaKey = hex(int(self.key[i] + self.key[i+1], 16))
-            xor = int(hexaLetter, 16) ^ int(hexaKey, 16)
-            decypher +=chr(xor)
-        return decypher
+def xor_encrypt(message, key):
+    message_bytes = message.encode('utf-8')
+    key_bytes = bytes.fromhex(key)
+
+    block_size = len(key_bytes)
+
+    if len(message_bytes) % block_size != 0:
+        padding_length = block_size - (len(message_bytes) % block_size)
+        message_bytes += b'\x00' * padding_length
+
+    cipher_bytes = bytearray()
+    for i in range(len(message_bytes)):
+        cipher_bytes.append(message_bytes[i] ^ key_bytes[i % block_size])
+
+    return cipher_bytes.hex()
+
+def xor_decrypt(cipher_hex, key):
+    cipher_bytes = bytes.fromhex(cipher_hex)
+    key_bytes = bytes.fromhex(key)
+
+    block_size = len(key_bytes)
+
+    decrypted_bytes = bytearray()
+    for i in range(len(cipher_bytes)):
+        decrypted_bytes.append(cipher_bytes[i] ^ key_bytes[i % block_size])
+
+    return decrypted_bytes.rstrip(b'\x00').decode('utf-8')

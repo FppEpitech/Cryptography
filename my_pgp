@@ -31,12 +31,6 @@ def main():
     if len(sys.argv) == 2 and sys.argv[1] == "-h":
         print(GetHelpCaption())
         return 0
-    else:
-        xor = Xor("You know nothing, Jon Snow", "65696420726576656e2079616d20646165642073692074616857")
-        print(xor.cypherMessage())
-        print("==========================================================================================")
-        xorDecipher = Xor("20070f2700071c6a4449060a490515164e4e12190b190011063c", "65696420726576656e2079616d20646165642073692074616857")
-        print(xorDecipher.decypherMessage())
 
 if __name__ == "__main__":
     main()
