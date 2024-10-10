@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import sys
 
+from Xor.Xor import *
+
 def GetHelpCaption():
     return """USAGE
     ./my_pgp CRYPTO_SYSTEM MODE [OPTIONS] [key]
