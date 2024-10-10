@@ -12,19 +12,17 @@ def xorTests():
     assert decypher.decypherMessage() == "You know nothing, Jon Snow"
 
     #Long key test
-    cypher = Xor("You know nothing, Jon Snow", "576861742069732064656164206d6179206e657665722064696511234")
-    decypher = Xor(cypher.cypherMessage(), "576861742069732064656164206d6179206e6576657220646965")
+    cypher = Xor("You know nothing, Jon Snow", "576861742069732064656164206d6179206e65766572206469651234")
+    decypher = Xor(cypher.cypherMessage(), "576861742069732064656164206d6179206e65766572206469651234")
     assert decypher.decypherMessage() == "You know nothing, Jon Snow"
 
     #Short key test
-    cypher = Xor("You know nothing, Jon Snow is the best", "576861742069732064656164206d6179206e657665722064696511234")
+    cypher = Xor("You know nothing, Jon Snow is the best", "576861742069732064656164206d6179206e6576657220646965")
     decypher = Xor(cypher.cypherMessage(), "576861742069732064656164206d6179206e6576657220646965")
     assert decypher.decypherMessage() == "You know nothing, Jon Snow is the best"
 
 def main():
-    cypher = Xor("You know nothing, Jon Snow", "576861742069732064656164206d6179206e6576657220646965")
-    decypher = Xor(cypher.cypherMessage(), "576861742069732064656164206d6179206e6576657220646965")
-    assert decypher.decypherMessage() == "You know nothing, Jon Snow"
+    xorTests()
 
 if __name__ == "__main__":
     main()
