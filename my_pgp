@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
-import sys
 
-from Xor.Xor import *
+from Parser import *
+
+from AES import Aes
+from XOR import Xor
+from RSA import Rsa
+from PGP_XOR import PgpXor
+from PGP_AES import PgpAes
 
 def GetHelpCaption():
     return """USAGE
@@ -27,10 +32,25 @@ The MESSAGE is read from standard input
 
   key Key used to cipher/decipher MESSAGE (incompatible with -g MODE)"""
 
+crypto_systems = {
+    "xor": Xor,
+    "aes": Aes,
+    "rsa": Rsa,
+    "pgp-xor": PgpXor,
+    "pgp-aes": PgpAes
+}
+
 def main():
     if len(sys.argv) == 2 and sys.argv[1] == "-h":
         print(GetHelpCaption())
         return 0
+
+    parser = Parser(sys.argv)
+    if parser.mode == Mode.GENERATE:
+        Rsa(parser.pValue, parser.qValue)
+        return 0
+    system = crypto_systems[parser.system](parser.key)
+    system.getMode(parser.mode)(parser.message)
 
 if __name__ == "__main__":
     main()
