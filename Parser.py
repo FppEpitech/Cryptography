@@ -117,4 +117,4 @@ class Parser:
             self.isHex(self.key)
         except Error as e:
             print(e)
-            return(84)
+            exit(84)
