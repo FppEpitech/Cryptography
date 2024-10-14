@@ -3,6 +3,7 @@
 import sys
 
 from Xor.Xor import Xor
+from Aes.Aes import Aes
 
 def xorTests():
 
@@ -21,8 +22,17 @@ def xorTests():
     decypher = Xor(cypher.cypherMessage(), "576861742069732064656164206d6179206e6576657220646965")
     assert decypher.decypherMessage() == "You know nothing, Jon Snow is the best"
 
+def aesTests():
+
+    #-b test
+    cypher = Aes("All men must die", "57696e74657220697320636f6d696e67")
+    assert cypher.cypherMessage() == "744ce22c385958348f0df26eceb62eef"
+    decypher = Aes(cypher.cypherMessage(), "57696e74657220697320636f6d696e67")
+    assert decypher.decypherMessage() == "All men must die"
+
 def main():
     xorTests()
+    aesTests()
 
 if __name__ == "__main__":
     main()
