@@ -50,7 +50,7 @@ class Parser:
 
     key: str = None
 
-    def parse(self):
+    def parse(self) -> None:
         if not (4 <= len(self.args) <= 5):
             raise Error("Invalid number of arguments do \"./my_pgp -h\" for help")
 
@@ -87,14 +87,14 @@ class Parser:
                 raise Error("The key length must be 128 bits (32 characters) for AES")
 
 
-    def getMessage(self):
+    def getMessage(self) -> None:
         self.message = sys.stdin.read().strip()
         if not self.message:
             raise Error("The message is empty")
         if self.hasOption and len(self.key) != len(self.message) * 2:
             raise Error("The key length must be equal to the message length because the \"-b\" flag is used")
 
-    def printArgs(self):
+    def printArgs(self) -> None:
         print("System: " + self.system)
         print("Mode: " + self.args[ARGS.MODE.value])
         print("Message: " + self.message)
@@ -109,7 +109,7 @@ class Parser:
         except ValueError:
             raise Error("The key must be in hexadecimal format")
 
-    def __init__(self, args: list):
+    def __init__(self, args: list) -> None:
         self.args = args
         try:
             self.parse()
