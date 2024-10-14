@@ -34,10 +34,6 @@ class Parser:
         "-g"
     ]
 
-    OPTION = [
-        "-b"
-    ]
-
     args: list = []
 
     system: str = None
@@ -121,4 +117,4 @@ class Parser:
             self.isHex(self.key)
         except Error as e:
             print(e)
-            exit(84)
+            return(84)
