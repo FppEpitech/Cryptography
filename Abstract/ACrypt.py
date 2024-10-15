@@ -8,7 +8,7 @@ class ACrypt(ABC):
     """
     Abstract Cryptographic class.
     """
-    def __init__(self, key : str) -> None:
+    def __init__(self, key : bytes) -> None:
         """
         Initialize the cryptographic object with a key.
         """
