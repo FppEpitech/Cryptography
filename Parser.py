@@ -19,6 +19,24 @@ class ARGS(Enum):
     MODE = 2
 
 
+def strToBytes(string: str) -> bytes:
+    try:
+        data = bytes.fromhex(string)
+    except ValueError:
+        raise Error("The string is not in hexadecimal format")
+    data = data[::-1]
+    return data
+
+
+def isPrime(number: int) -> bool:
+    if number == 2 or number == 3: return True
+    if number % 2 == 0 or number < 2: return False
+    for i in range(3, int(number ** 0.5) + 1, 2):
+        if number % i == 0:
+            return False
+    return True
+
+
 class Parser:
     AlgorithmName = [
         "xor",
@@ -40,15 +58,23 @@ class Parser:
 
     mode: Mode = None
 
-    pValue: int = None
+    pValue: bytes = None
 
-    qValue: int = None
+    qValue: bytes = None
 
     message: str = None
 
     hasOption: bool = False
 
     key: str = None
+
+    realkey: bytes = None
+
+    """
+    Convert a string to bytes
+    The string must be in hexadecimal format if not an error is raised
+    The string is in little-endian format, so I had to reverse all bytes to get the correct value
+    """
 
     def parse(self) -> None:
         if not (4 <= len(self.args) <= 5):
@@ -62,29 +88,31 @@ class Parser:
             raise Error(f"Unknown mode: {mode}")
 
         if self.system == self.AlgorithmName[Algorithm.RSA.value]:
-            if mode != "-g":
-                raise Error("RSA must be used with -g mode")
-            if len(self.args) != 5:
-                raise Error("RSA must be used with 2 prime numbers")
-            try:
-                self.mode = Mode(mode)
-                self.pValue = int(self.args[3])
-                self.qValue = int(self.args[4])
-            except ValueError:
-                raise Error("RSA must be used with 2 prime numbers")
+            if mode == "-g":
+                if len(self.args) != 5:
+                    raise Error("RSA must be used with 2 prime numbers")
+                try:
+                    self.mode = Mode(mode)
+                    self.pValue = strToBytes(self.args[3])
+                    self.qValue = strToBytes(self.args[4])
+                except ValueError:
+                    raise Error("RSA must be used with 2 prime numbers in hexadecimal format")
+                if not isPrime(int.from_bytes(self.pValue, "big")) or not isPrime(int.from_bytes(self.qValue, "big")):
+                    raise Error("The numbers must be prime")
+            return
         else:
             if mode == "-g":
                 raise Error("Only RSA can be used with -g mode, use -c or -d mode instead")
-            self.mode = Mode(mode)
-            keyIndex : int = ARGS.MODE.value + 1
-            if len(self.args) == 5:
-                self.hasOption = True
-                if self.args[keyIndex] != "-b":
-                    raise Error('The flag has to be "-b"')
-                keyIndex += 1
-            self.key = self.args[keyIndex]
-            if self.system == "aes" and len(self.key) != 32:
-                raise Error("The key length must be 128 bits (32 characters) for AES")
+        self.mode = Mode(mode)
+        keyIndex : int = ARGS.MODE.value + 1
+        if len(self.args) == 5:
+            self.hasOption = True
+            if self.args[keyIndex] != "-b":
+                raise Error('The flag has to be "-b"')
+            keyIndex += 1
+        self.key = self.args[keyIndex]
+        if self.system == "aes" and len(self.key) != 32:
+            raise Error("The key length must be 128 bits (32 characters) for AES")
 
 
     def getMessage(self) -> None:
@@ -102,19 +130,13 @@ class Parser:
         if self.hasOption:
             print("Key: " + self.key)
 
-    def isHex(self, string: str) -> bool:
-        try:
-            int(string, 16)
-            return True
-        except ValueError:
-            raise Error("The key must be in hexadecimal format")
-
     def __init__(self, args: list) -> None:
         self.args = args
         try:
             self.parse()
-            self.getMessage()
-            self.isHex(self.key)
+            if self.system != self.AlgorithmName[Algorithm.RSA.value]:
+                self.getMessage()
+                self.realKey = strToBytes(self.key)
         except Error as e:
             print(e)
             exit(84)

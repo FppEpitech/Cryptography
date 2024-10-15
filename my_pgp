@@ -47,10 +47,12 @@ def main():
 
     parser = Parser(sys.argv)
     if parser.mode == Mode.GENERATE:
-        Rsa(parser.pValue, parser.qValue)
+        rsa = Rsa(parser.pValue, parser.qValue)
+        rsa.generateKeys()
+        print(rsa.getKeys())
         return 0
-    system = crypto_systems[parser.system](parser.key)
-    system.getMode(parser.mode)(parser.message)
+    system = crypto_systems[parser.system](parser.key).getMode(parser.mode)(parser.message)
+    print(system)
 
 if __name__ == "__main__":
     main()
