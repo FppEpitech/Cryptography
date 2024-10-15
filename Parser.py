@@ -18,14 +18,13 @@ class ARGS(Enum):
     SYSTEM = 1
     MODE = 2
 
-
-def strToBytes(string: str) -> bytes:
+def strToBytes(hexStr: str) -> bytes:
     try:
-        data = bytes.fromhex(string)
+        string = ''.join([hexStr[i:i + 2] for i in range(0, len(hexStr), 2)][::-1])
+        bigEndian = bytes.fromhex(string)
     except ValueError:
         raise Error("The string is not in hexadecimal format")
-    data = data[::-1]
-    return data
+    return bigEndian
 
 
 def isPrime(number: int) -> bool:
@@ -58,9 +57,9 @@ class Parser:
 
     mode: Mode = None
 
-    pValue: bytes = None
+    pValue: int = None
 
-    qValue: bytes = None
+    qValue: int = None
 
     message: str = None
 
@@ -87,21 +86,22 @@ class Parser:
         if mode not in self.MODE:
             raise Error(f"Unknown mode: {mode}")
 
-        if self.system == self.AlgorithmName[Algorithm.RSA.value]:
-            if mode == "-g":
+        if mode == "-g":
+            if self.system == self.AlgorithmName[Algorithm.RSA.value]:
                 if len(self.args) != 5:
                     raise Error("RSA must be used with 2 prime numbers")
                 try:
                     self.mode = Mode(mode)
-                    self.pValue = strToBytes(self.args[3])
-                    self.qValue = strToBytes(self.args[4])
+                    tmpP: str = self.args[3]
+                    tmpQ: str = self.args[4]
+                    self.pValue = int(''.join([tmpP[i:i + 2] for i in range(0, len(tmpP), 2)][::-1]), 16)
+                    self.qValue = int(''.join([tmpQ[i:i + 2] for i in range(0, len(tmpQ), 2)][::-1]), 16)
                 except ValueError:
                     raise Error("RSA must be used with 2 prime numbers in hexadecimal format")
-                if not isPrime(int.from_bytes(self.pValue, "big")) or not isPrime(int.from_bytes(self.qValue, "big")):
+                if not isPrime(self.pValue) or not isPrime(self.qValue):
                     raise Error("The numbers must be prime")
-            return
-        else:
-            if mode == "-g":
+                return
+            else:
                 raise Error("Only RSA can be used with -g mode, use -c or -d mode instead")
         self.mode = Mode(mode)
         keyIndex : int = ARGS.MODE.value + 1
@@ -134,7 +134,7 @@ class Parser:
         self.args = args
         try:
             self.parse()
-            if self.system != self.AlgorithmName[Algorithm.RSA.value]:
+            if self.mode != Mode.GENERATE:
                 self.getMessage()
                 self.realKey = strToBytes(self.key)
         except Error as e:
