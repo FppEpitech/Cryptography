@@ -5,8 +5,16 @@ from Aes.SBox import *
 
 class Aes(ACrypt):
     def __init__(self, key: bytes) -> None:
-        super().__init__("".join(reversed([key[i:i+2] for i in range(0, len(key), 2)])))
-        self.keyRound : KeyExpension = KeyExpension("".join(reversed([key[i:i+2] for i in range(0, len(key), 2)])))
+        super().__init__(self.littleEndian(key))
+        self.keyRound : KeyExpension = KeyExpension(self.littleEndian(key))
+
+    def littleEndian(self, key: bytes):
+        newKey = ""
+        for j in range(0, len(key), 8):
+            chunk = key[j:j+8]
+            reversed_chunk = "".join([chunk[i:i+2] for i in range(0, len(chunk), 2)][::-1])
+            newKey += reversed_chunk
+        return newKey
 
     def createBlocksEncrypt(self, message : bytes):
         blocks : list = []
@@ -37,11 +45,11 @@ class Aes(ACrypt):
             aes = self.shiftRows(aes)
             aes = self.addRoundKey(aes, self.keyRound.getKeyRound(10))
             cypher += aes.hex()
-        return "".join(reversed([cypher[i:i+2] for i in range(0, len(cypher), 2)]))
+        return self.littleEndian(cypher)
 
     def _decrypt(self, message: str) -> str:
         decypher : str = ""
-        blocks : list = self.createBlocksDecrypt(bytes.fromhex("".join(reversed([message[i:i+2] for i in range(0, len(message), 2)]))))
+        blocks : list = self.createBlocksDecrypt(bytes.fromhex(self.littleEndian(message)))
         for block in blocks:
             aes : bytes = self.addRoundKey(block, self.keyRound.getKeyRound(10))
             for i in range(9, 0, -1):
