@@ -1,13 +1,15 @@
-class Xor:
-    def __init__(self, message : str, key : str) -> None:
-        self.message = message
-        self.key = key
 
-    def cypherMessage(self) -> str:
-        return xor_encrypt(self.message[::-1], self.key)
+from Abstract.ACrypt import ACrypt
 
-    def decypherMessage(self) -> str:
-        return xor_decrypt(self.message, self.key)[::-1]
+class Xor(ACrypt):
+    def __init__(self, key: bytes) -> None:
+        super().__init__(key)
+
+    def _encrypt(self, message: str) -> str:
+        return xor_encrypt(message[::-1], self.key)
+
+    def _decrypt(self, message: str) -> str:
+        return xor_decrypt(message, self.key)[::-1]
 
 
 def xor_encrypt(message : str, key : str) -> str:
