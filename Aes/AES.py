@@ -8,29 +8,53 @@ class Aes(ACrypt):
         super().__init__(key)
         self.keyRound : KeyExpension = KeyExpension(key)
 
+
+    def createBlocksEncrypt(self, message : bytes):
+        blocks : list = []
+        for i in range(0, len(message), 16):
+            blocks.append(message[i:i+16])
+        if len(blocks[-1]) % len(bytes.fromhex(self.key)) != 0:
+            padding_length : int = len(bytes.fromhex(self.key)) - (len(blocks[-1])) % len(bytes.fromhex(self.key))
+            blocks[-1] += b'\x00' * padding_length
+        return blocks
+
+    def createBlocksDecrypt(self, message : bytes):
+        blocks : list = []
+        for i in range(0, len(message), 16):
+            blocks.append(message[i:i+16])
+        return blocks
+
     def _encrypt(self, message: str) -> str:
-        aes : bytes = self.addRoundKey(message.encode(errors='ignore'), bytes.fromhex(self.key))
-        for i in range(9):
+        cypher : str = ""
+        blocks : list = self.createBlocksEncrypt(message.encode(errors='ignore'))
+        for block in blocks:
+            aes : bytes = self.addRoundKey(block, bytes.fromhex(self.key))
+            for i in range(9):
+                aes = self.subBytes(aes)
+                aes = self.shiftRows(aes)
+                aes = self.mixColumns(aes, self.mixSingleColumn)
+                aes = self.addRoundKey(aes, self.keyRound.getKeyRound(i+1))
             aes = self.subBytes(aes)
             aes = self.shiftRows(aes)
-            aes = self.mixColumns(aes, self.mixSingleColumn)
-            aes = self.addRoundKey(aes, self.keyRound.getKeyRound(i+1))
-        aes = self.subBytes(aes)
-        aes = self.shiftRows(aes)
-        aes = self.addRoundKey(aes, self.keyRound.getKeyRound(10))
-        return aes.hex()
+            aes = self.addRoundKey(aes, self.keyRound.getKeyRound(10))
+            cypher += aes.hex()
+        return cypher
 
     def _decrypt(self, message: str) -> str:
-        aes : bytes = self.addRoundKey(bytes.fromhex(message), self.keyRound.getKeyRound(10))
-        for i in range(9, 0, -1):
+        decypher : str = ""
+        blocks : list = self.createBlocksDecrypt(bytes.fromhex(message))
+        for block in blocks:
+            aes : bytes = self.addRoundKey(block, self.keyRound.getKeyRound(10))
+            for i in range(9, 0, -1):
+                aes = self.invShiftRows(aes)
+                aes = self.invSubBytes(aes)
+                aes = self.addRoundKey(aes, self.keyRound.getKeyRound(i))
+                aes = self.mixColumns(aes, self.invMixSingleColumn)
             aes = self.invShiftRows(aes)
             aes = self.invSubBytes(aes)
-            aes = self.addRoundKey(aes, self.keyRound.getKeyRound(i))
-            aes = self.mixColumns(aes, self.invMixSingleColumn)
-        aes = self.invShiftRows(aes)
-        aes = self.invSubBytes(aes)
-        aes = self.addRoundKey(aes, self.keyRound.getKeyRound(0))
-        return aes.decode(errors='ignore')
+            aes = self.addRoundKey(aes, self.keyRound.getKeyRound(0))
+            decypher += aes.rstrip(b'\x00').decode(errors='ignore')
+        return decypher
 
     def addRoundKey(self, block1 : bytes, block2 : bytes) -> bytes:
         newBlock : bytearray = bytearray()
