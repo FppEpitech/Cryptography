@@ -3,7 +3,7 @@
 from Parser import *
 
 from AES import Aes
-from XOR import Xor
+from Xor.Xor import Xor
 from RSA.RSA import Rsa
 from PGP_XOR import PgpXor
 from PGP_AES import PgpAes
