@@ -139,8 +139,8 @@ class Parser:
         try:
             self.parse()
             if self.mode != Mode.GENERATE:
-                self.getMessage()
                 self.realKey = strToBytes(self.key)
+                self.getMessage()
         except Error as e:
             print(e)
             exit(84)
