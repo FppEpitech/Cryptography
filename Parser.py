@@ -119,9 +119,11 @@ class Parser:
         self.message = sys.stdin.read().strip()
         if not self.message:
             raise Error("The message is empty")
-        if self.system == "xor" and self.hasOption and len(self.key) == len(self.message):
+        if self.system == self.AlgorithmName[Algorithm.AES.value] and self.hasOption and len(self.key) == len(self.message):
             return
-        if self.hasOption and len(self.key) != len(self.message) * 2:
+        if self.system == self.AlgorithmName[Algorithm.XOR.value] and self.hasOption and len(self.key) == len(self.message):
+            return
+        elif self.hasOption and len(self.key) != len(self.message) * 2:
             raise Error("The key length must be equal to the message length because the \"-b\" flag is used")
 
     def printArgs(self) -> None:
