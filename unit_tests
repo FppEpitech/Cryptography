@@ -31,22 +31,22 @@ def aesTests():
     #-b test
     aes = Aes("57696e74657220697320636f6d696e67")
     cypher = aes._encrypt("All men must die")
-    assert cypher == "e9ffa03b5b0f4a52291e281b8ae18a9a"
-    decypher = aes._decrypt("e9ffa03b5b0f4a52291e281b8ae18a9a")
+    assert cypher == "744ce22c385958348f0df26eceb62eef"
+    decypher = aes._decrypt("744ce22c385958348f0df26eceb62eef")
     assert decypher == "All men must die"
 
     # Short messag test
     aes = Aes("57696e74657220697320636f6d696e67")
     cypher = aes._encrypt("All men must d")
-    assert cypher == "da571027847826595a3c6a9cf4471454"
-    decypher = aes._decrypt("da571027847826595a3c6a9cf4471454")
+    assert cypher == "6449baa56dbe4ee34ea89a6d2dcb92b9"
+    decypher = aes._decrypt("6449baa56dbe4ee34ea89a6d2dcb92b9")
     assert decypher == "All men must d"
 
     # Long messag test
     aes = Aes("57696e74657220697320636f6d696e67")
     cypher = aes._encrypt("All men must die ahah")
-    assert cypher == "8e71b8819515985760538897e94bb982e9ffa03b5b0f4a52291e281b8ae18a9a"
-    decypher = aes._decrypt("8e71b8819515985760538897e94bb982e9ffa03b5b0f4a52291e281b8ae18a9a")
+    assert cypher == "744ce22c385958348f0df26eceb62eefdd1ff81962eabbbdae56423d2d9df7dd"
+    decypher = aes._decrypt("744ce22c385958348f0df26eceb62eefdd1ff81962eabbbdae56423d2d9df7dd")
     assert decypher == "All men must die ahah"
 
 def main():
