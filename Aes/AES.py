@@ -9,7 +9,7 @@ class Aes(ACrypt):
         self.keyRound : KeyExpension = KeyExpension(key)
 
     def _encrypt(self, message: str) -> str:
-        aes : bytes = self.addRoundKey(message.encode('utf-8'), bytes.fromhex(self.key))
+        aes : bytes = self.addRoundKey(message.encode(errors='ignore'), bytes.fromhex(self.key))
         for i in range(9):
             aes = self.subBytes(aes)
             aes = self.shiftRows(aes)
@@ -30,7 +30,7 @@ class Aes(ACrypt):
         aes = self.invShiftRows(aes)
         aes = self.invSubBytes(aes)
         aes = self.addRoundKey(aes, self.keyRound.getKeyRound(0))
-        return aes.decode('utf-8')
+        return aes.decode(errors='ignore')
 
     def addRoundKey(self, block1 : bytes, block2 : bytes) -> bytes:
         newBlock : bytearray = bytearray()
