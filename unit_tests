@@ -8,19 +8,23 @@ from Aes.Aes import Aes
 def xorTests():
 
     #-b test
-    cypher = Xor("You know nothing, Jon Snow", "576861742069732064656164206d6179206e6576657220646965")
-    decypher = Xor(cypher.cypherMessage(), "576861742069732064656164206d6179206e6576657220646965")
-    assert decypher.decypherMessage() == "You know nothing, Jon Snow"
+    xor = Xor("576861742069732064656164206d6179206e6576657220646965")
+    cypher = xor._encrypt("You know nothing, Jon Snow")
+    assert cypher == "20070f2700071c6a4449060a490515164e4e12190b190011063c"
+    decypher = xor._decrypt(cypher)
+    assert decypher == "You know nothing, Jon Snow"
 
-    #Long key test
-    cypher = Xor("You know nothing, Jon Snow", "576861742069732064656164206d6179206e65766572206469651234")
-    decypher = Xor(cypher.cypherMessage(), "576861742069732064656164206d6179206e65766572206469651234")
-    assert decypher.decypherMessage() == "You know nothing, Jon Snow"
+    # #Long key test
+    xor = Xor("576861742069732064656164206d6179206e65766572206469651234")
+    cypher = xor._encrypt("You know nothing, Jon Snow")
+    decypher = xor._decrypt(cypher)
+    assert decypher == "You know nothing, Jon Snow"
 
-    #Short key test
-    cypher = Xor("You know nothing, Jon Snow is the best", "576861742069732064656164206d6179206e6576657220646965")
-    decypher = Xor(cypher.cypherMessage(), "576861742069732064656164206d6179206e6576657220646965")
-    assert decypher.decypherMessage() == "You know nothing, Jon Snow is the best"
+    # #Short key test
+    xor = Xor("576861742069732064656164206d6179206e6576657220646965")
+    cypher = xor._encrypt("You know nothing, Jon Snow is the best")
+    decypher = xor._decrypt(cypher)
+    assert decypher == "You know nothing, Jon Snow is the best"
 
 def aesTests():
 

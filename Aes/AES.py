@@ -4,10 +4,9 @@ from Aes.KeyExpansion import KeyExpension
 from Aes.SBox import *
 
 class Aes(ACrypt):
-    def __init__(self, key: str) -> None:
-        super().__init__(key)
-        self.keyRound : KeyExpension = KeyExpension(key)
-
+    def __init__(self, key: bytes) -> None:
+        super().__init__("".join(reversed([key[i:i+2] for i in range(0, len(key), 2)])))
+        self.keyRound : KeyExpension = KeyExpension("".join(reversed([key[i:i+2] for i in range(0, len(key), 2)])))
 
     def createBlocksEncrypt(self, message : bytes):
         blocks : list = []
@@ -38,11 +37,11 @@ class Aes(ACrypt):
             aes = self.shiftRows(aes)
             aes = self.addRoundKey(aes, self.keyRound.getKeyRound(10))
             cypher += aes.hex()
-        return cypher
+        return "".join(reversed([cypher[i:i+2] for i in range(0, len(cypher), 2)]))
 
     def _decrypt(self, message: str) -> str:
         decypher : str = ""
-        blocks : list = self.createBlocksDecrypt(bytes.fromhex(message))
+        blocks : list = self.createBlocksDecrypt(bytes.fromhex("".join(reversed([message[i:i+2] for i in range(0, len(message), 2)]))))
         for block in blocks:
             aes : bytes = self.addRoundKey(block, self.keyRound.getKeyRound(10))
             for i in range(9, 0, -1):
