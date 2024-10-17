@@ -4,6 +4,7 @@ import sys
 
 from Xor.Xor import Xor
 from Aes.AES import Aes
+from RSA.RSA import Rsa
 
 def xorTests():
 
@@ -49,9 +50,22 @@ def aesTests():
     decypher = aes._decrypt("744ce22c385958348f0df26eceb62eefdd1ff81962eabbbdae56423d2d9df7dd")
     assert decypher == "All men must die ahah"
 
+def rsaGenTests():
+
+    rsa = Rsa("")
+    p = "4b1da73924978f2e9c1f04170e46820d648edbee12ccf4d4462af89b080c86e1"
+    q = "bb3ca1e126f7c8751bd81bc8daa226494efb3d128f72ed9f6cacbe96e14166cb"
+    pValue = int(''.join([p[i:i + 2] for i in range(0, len(p), 2)][::-1]), 16)
+    qValue = int(''.join([q[i:i + 2] for i in range(0, len(q), 2)][::-1]), 16)
+    rsa.setGenValue(pValue, qValue)
+    rsa.generateKeys()
+    assert rsa.getPublicKey() == "010001-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3"
+    assert rsa.getPrivateKey() == "108fbe864dbadd8247d81529ed1c4ef448399929cc9b1e84534ebc1e61e5eae1661ed263f93e82bf9ae1784776430599f90bc60481d1a3e0861a57c70352f9e-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3"
+
 def main():
     xorTests()
     aesTests()
+    rsaGenTests()
 
 if __name__ == "__main__":
     main()

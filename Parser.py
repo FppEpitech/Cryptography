@@ -6,6 +6,10 @@ import sys
 from Mode import Mode
 from Error import Error
 
+from math import sqrt
+
+MAX_PRIME_COMPARAISON = 181358386295828890784790396749914598494021005743692864945805614932638907
+
 class Algorithm(Enum):
     XOR = 0
     AES = 1
@@ -27,13 +31,21 @@ def strToBytes(hexStr: str) -> bytes:
     return bigEndian
 
 
-def isPrime(number: int) -> bool:
-    if number == 2 or number == 3: return True
-    if number % 2 == 0 or number < 2: return False
-    for i in range(3, int(number ** 0.5) + 1, 2):
-        if number % i == 0:
+def isPrime(n: int) -> bool:
+    if (n > MAX_PRIME_COMPARAISON):
+        return True
+    prime_flag = 0
+    if(n > 1):
+        for i in range(2, int(sqrt(n)) + 1):
+            if (n % i == 0):
+                prime_flag = 1
+                break
+        if (prime_flag == 0):
+            return True
+        else:
             return False
-    return True
+    else:
+        return False
 
 
 class Parser:
@@ -119,9 +131,9 @@ class Parser:
         self.message = sys.stdin.read().strip()
         if not self.message:
             raise Error("The message is empty")
-        if self.system == self.AlgorithmName[Algorithm.AES.value] and self.hasOption and len(self.key) == len(self.message):
+        if self.system == self.AlgorithmName[Algorithm.AES.value] and self.hasOption and len(self.key) == len(self.message) and self.mode == Mode.DECRYPT:
             return
-        if self.system == self.AlgorithmName[Algorithm.XOR.value] and self.hasOption and len(self.key) == len(self.message):
+        elif self.system == self.AlgorithmName[Algorithm.XOR.value] and self.hasOption and len(self.key) == len(self.message) and self.mode == Mode.DECRYPT:
             return
         elif self.hasOption and len(self.key) != len(self.message) * 2:
             raise Error("The key length must be equal to the message length because the \"-b\" flag is used")
