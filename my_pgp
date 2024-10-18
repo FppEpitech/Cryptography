@@ -6,7 +6,7 @@ from Aes.AES import Aes
 from Xor.Xor import Xor
 from RSA.RSA import Rsa
 from PGP_XOR import PgpXor
-from PGP_AES import PgpAes
+from PGP_AES.PGP_AES import PgpAes
 
 def GetHelpCaption():
     return """USAGE
@@ -51,6 +51,14 @@ def main():
         rsa.setGenValue(parser.pValue, parser.qValue)
         rsa.generateKeys()
         rsa.displayKeys()
+        return
+    if parser.system == parser.AlgorithmName[Algorithm.RSA.value]:
+        rsa = Rsa(bytes(0))
+        rsa.setLeftRightValue(parser.leftValue, parser.rightValue)
+        if parser.mode == Mode.ENCRYPT:
+            print(rsa._encrypt(parser.message))
+        else:
+            print(rsa._decrypt(parser.message))
         return
     system = crypto_systems[parser.system](parser.key).getMode(parser.mode)(parser.message)
     print(system)

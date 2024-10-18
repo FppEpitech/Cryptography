@@ -73,6 +73,10 @@ class Parser:
 
     qValue: int = None
 
+    leftValue: str = None
+
+    rightValue: str = None
+
     message: str = None
 
     hasOption: bool = False
@@ -126,6 +130,16 @@ class Parser:
         if self.system == "aes" and len(self.key) != 32:
             raise Error("The key length must be 128 bits (32 characters) for AES")
 
+    def parseKeyRSA(self, key : str) -> None:
+        try:
+            left, right = key.split('-')
+            strToBytes(right)
+            strToBytes(left)
+            self.leftValue = left
+            self.rightValue = right
+        except:
+            raise Error("Wrong key RSA")
+
 
     def getMessage(self) -> None:
         self.message = sys.stdin.read().strip()
@@ -151,7 +165,10 @@ class Parser:
         try:
             self.parse()
             if self.mode != Mode.GENERATE:
-                self.realKey = strToBytes(self.key)
+                if self.system != self.AlgorithmName[Algorithm.RSA.value]:
+                    self.realKey = strToBytes(self.key)
+                else:
+                    self.parseKeyRSA(self.key)
                 self.getMessage()
         except Error as e:
             print(e)
