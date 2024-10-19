@@ -159,6 +159,8 @@ class Parser:
             return
         elif self.system == self.AlgorithmName[Algorithm.XOR.value] and self.hasOption and len(self.key) == len(self.message) and self.mode == Mode.DECRYPT:
             return
+        elif (self.system == self.AlgorithmName[Algorithm.PGP_AES.value] or self.system == self.AlgorithmName[Algorithm.PGP_XOR.value]) and self.hasOption and self.mode == Mode.DECRYPT:
+            return
         elif self.hasOption and len(self.key) != len(self.message) * 2:
             raise Error("The key length must be equal to the message length because the \"-b\" flag is used")
 

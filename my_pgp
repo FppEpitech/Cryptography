@@ -60,6 +60,16 @@ def main():
         else:
             print(rsa._decrypt(parser.message))
         return
+    if parser.system == parser.AlgorithmName[Algorithm.PGP_AES.value]:
+        pgp = PgpAes(parser.key)
+        pgp.setLeftRightValue(parser.leftValue, parser.rightValue)
+        pgp.setIsBlockMode(parser.hasOption)
+        if parser.mode == Mode.ENCRYPT:
+            print(pgp._encrypt(parser.message))
+        else:
+            print(pgp._decrypt(parser.message))
+        return
+
     system = crypto_systems[parser.system](parser.key).getMode(parser.mode)(parser.message)
     print(system)
 
