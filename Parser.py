@@ -142,6 +142,14 @@ class Parser:
         except:
             raise Error("Wrong key RSA")
 
+    def parseKeyPGP(self, key : str) -> None:
+        try:
+            pgp, rsa = key.split(':')
+            self.parseKeyRSA(rsa)
+            strToBytes(pgp)
+            self.key = pgp
+        except:
+            raise Error("Wrong key PGP")
 
     def getMessage(self) -> None:
         self.message = sys.stdin.read().strip()
@@ -168,7 +176,10 @@ class Parser:
             self.parse()
             if self.mode != Mode.GENERATE:
                 if self.system != self.AlgorithmName[Algorithm.RSA.value]:
-                    self.realKey = strToBytes(self.key)
+                    if self.system != self.AlgorithmName[Algorithm.PGP_AES.value] and self.system != self.AlgorithmName[Algorithm.PGP_XOR.value]:
+                        self.realKey = strToBytes(self.key)
+                    else:
+                        self.parseKeyPGP(self.key)
                 else:
                     self.parseKeyRSA(self.key)
                 self.getMessage()
