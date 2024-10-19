@@ -56,7 +56,6 @@ class Rsa(ACrypt):
         return self.privateKey
 
     def _encrypt(self, message: str) -> str:
-
         message_bytes: bytes = bytes.fromhex(message.encode().hex())[::-1]
         n : int = int(self.little_endian(self.right).encode(), 16)
         e : int = int(self.little_endian(self.left).encode(), 16)
@@ -64,8 +63,12 @@ class Rsa(ACrypt):
         return self.little_endian(format(compute, '0x'))
 
     def _decrypt(self, message: str) -> str:
-        return "rsa d"
+        message_bytes: bytes = bytes.fromhex(message)
+        n : int = int(self.little_endian(self.right).encode(), 16)
+        d : int = int(self.little_endian(self.left).encode(), 16)
+        compute = pow(int.from_bytes(message_bytes, 'little'), d, n)
+        return bytes.fromhex(format(compute, '0x')).decode()[::-1]
 
     def displayKeys(self) -> None:
-        print(f"Public Key: {self.publicKey}")
-        print(f"Private Key: {self.privateKey}")
+        print(f"public key: {self.publicKey}")
+        print(f"private key: {self.privateKey}")

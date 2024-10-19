@@ -126,6 +126,8 @@ class Parser:
             if self.args[keyIndex] != "-b":
                 raise Error('The flag has to be "-b"')
             keyIndex += 1
+            if self.system == self.AlgorithmName[Algorithm.RSA.value]:
+                raise Error("RSA don't allowed -b")
         self.key = self.args[keyIndex]
         if self.system == "aes" and len(self.key) != 32:
             raise Error("The key length must be 128 bits (32 characters) for AES")
