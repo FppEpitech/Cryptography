@@ -4,7 +4,7 @@ import random
 
 from Abstract.ACrypt import ACrypt
 
-FERMAT_PRIME = 65537
+FERMAT_NUMBERS = [65537, 257, 17, 5, 3]
 
 def mod_inverse(a: int, m: int) -> int:
     # Extended Euclidean Algorithm for modular inverse
@@ -35,15 +35,21 @@ class Rsa(ACrypt):
         self.right = right
 
     def little_endian(self, n : str) -> str:
+        if (len(n) % 2 != 0):
+            n = "0" + n
         return "".join([n[i:i+2] for i in range(0, len(n), 2)][::-1])
 
     def generateKeys(self) -> None:
         n = self.pValue * self.qValue
         phi = (self.pValue - 1) * (self.qValue - 1)
-        e = FERMAT_PRIME
+        idx = 0
+        e = FERMAT_NUMBERS[idx]
+        while e > phi:
+            idx += 1
+            e = FERMAT_NUMBERS[idx]
         d = mod_inverse(e, phi)
 
-        self.publicKey = f"{self.little_endian(format(e, '06x'))}-{self.little_endian(format(n, '0x'))}"
+        self.publicKey = f"{self.little_endian(format(e, '0x'))}-{self.little_endian(format(n, '0x'))}"
         self.privateKey = f"{self.little_endian(format(d, '0x'))}-{self.little_endian(format(n, '0x'))}"
 
     def getKeys(self) -> tuple:

@@ -5,7 +5,7 @@ from Parser import *
 from Aes.AES import Aes
 from Xor.Xor import Xor
 from RSA.RSA import Rsa
-from PGP_XOR import PgpXor
+from PGP_XOR.PGP_XOR import PgpXor
 from PGP_AES.PGP_AES import PgpAes
 
 def GetHelpCaption():
@@ -60,8 +60,12 @@ def main():
         else:
             print(rsa._decrypt(parser.message))
         return
-    if parser.system == parser.AlgorithmName[Algorithm.PGP_AES.value]:
-        pgp = PgpAes(parser.key)
+    if parser.system == parser.AlgorithmName[Algorithm.PGP_AES.value] or parser.system == parser.AlgorithmName[Algorithm.PGP_XOR.value]:
+        pgp = None
+        if parser.system == parser.AlgorithmName[Algorithm.PGP_AES.value]:
+            pgp = PgpAes(parser.key)
+        else:
+            pgp = PgpXor(parser.key)
         pgp.setLeftRightValue(parser.leftValue, parser.rightValue)
         pgp.setIsBlockMode(parser.hasOption)
         if parser.mode == Mode.ENCRYPT:
