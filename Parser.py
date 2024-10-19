@@ -142,6 +142,14 @@ class Parser:
         except:
             raise Error("Wrong key RSA")
 
+    def parseKeyPGP(self, key : str) -> None:
+        try:
+            pgp, rsa = key.split(':')
+            self.parseKeyRSA(rsa)
+            strToBytes(pgp)
+            self.key = pgp
+        except:
+            raise Error("Wrong key PGP")
 
     def getMessage(self) -> None:
         self.message = sys.stdin.read().strip()
@@ -150,6 +158,8 @@ class Parser:
         if self.system == self.AlgorithmName[Algorithm.AES.value] and self.hasOption and len(self.key) == len(self.message) and self.mode == Mode.DECRYPT:
             return
         elif self.system == self.AlgorithmName[Algorithm.XOR.value] and self.hasOption and len(self.key) == len(self.message) and self.mode == Mode.DECRYPT:
+            return
+        elif (self.system == self.AlgorithmName[Algorithm.PGP_AES.value] or self.system == self.AlgorithmName[Algorithm.PGP_XOR.value]) and self.hasOption and self.mode == Mode.DECRYPT:
             return
         elif self.hasOption and len(self.key) != len(self.message) * 2:
             raise Error("The key length must be equal to the message length because the \"-b\" flag is used")
@@ -168,7 +178,10 @@ class Parser:
             self.parse()
             if self.mode != Mode.GENERATE:
                 if self.system != self.AlgorithmName[Algorithm.RSA.value]:
-                    self.realKey = strToBytes(self.key)
+                    if self.system != self.AlgorithmName[Algorithm.PGP_AES.value] and self.system != self.AlgorithmName[Algorithm.PGP_XOR.value]:
+                        self.realKey = strToBytes(self.key)
+                    else:
+                        self.parseKeyPGP(self.key)
                 else:
                     self.parseKeyRSA(self.key)
                 self.getMessage()
