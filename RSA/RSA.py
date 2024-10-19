@@ -20,6 +20,8 @@ class Rsa(ACrypt):
     privateKey : str = None
     qValue : int = 0
     pValue : int = 0
+    left = ""
+    right = ""
 
     def __init__(self, key: bytes) -> None:
         super().__init__(key)
@@ -27,6 +29,10 @@ class Rsa(ACrypt):
     def setGenValue(self, p : int, q : int) -> None:
         self.pValue = p
         self.qValue = q
+
+    def setLeftRightValue(self, left : str, right : str) -> None:
+        self.left = left
+        self.right = right
 
     def little_endian(self, n : str) -> str:
         return "".join([n[i:i+2] for i in range(0, len(n), 2)][::-1])
@@ -50,11 +56,19 @@ class Rsa(ACrypt):
         return self.privateKey
 
     def _encrypt(self, message: str) -> str:
-        return "rsa e"
+        message_bytes: bytes = bytes.fromhex(message.encode().hex())[::-1]
+        n : int = int(self.little_endian(self.right).encode(), 16)
+        e : int = int(self.little_endian(self.left).encode(), 16)
+        compute = pow(int.from_bytes(message_bytes, 'big'), e, n)
+        return self.little_endian(format(compute, '0x'))
 
     def _decrypt(self, message: str) -> str:
-        return "rsa d"
+        message_bytes: bytes = bytes.fromhex(message)
+        n : int = int(self.little_endian(self.right).encode(), 16)
+        d : int = int(self.little_endian(self.left).encode(), 16)
+        compute = pow(int.from_bytes(message_bytes, 'little'), d, n)
+        return bytes.fromhex(format(compute, '0x')).decode()[::-1]
 
     def displayKeys(self) -> None:
-        print(f"Public Key: {self.publicKey}")
-        print(f"Private Key: {self.privateKey}")
+        print(f"public key: {self.publicKey}")
+        print(f"private key: {self.privateKey}")
